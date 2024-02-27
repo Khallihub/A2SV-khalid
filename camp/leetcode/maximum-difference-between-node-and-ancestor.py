@@ -5,18 +5,19 @@
 #         self.left = left
 #         self.right = right
 class Solution:
-    def __init__(self):
-        self.max_difference = 0
-
     def maxAncestorDiff(self, root: Optional[TreeNode]) -> int:
-        self.findMaxAncestorDifference(root, root.val, root.val)
-        return self.max_difference
+        max_abs = 0
+        def helper(root, max_, min_):
+            if root is None: return 0
+            
+            max_ = max(root.val, max_)
+            min_ = min(root.val, min_)
+            
+            nonlocal max_abs
+            max_abs = max(max_abs, max_ - min_)
 
-    def findMaxAncestorDifference(self, currentNode, minValue, maxValue):
-        if currentNode:
-            minValue = min(minValue, currentNode.val)
-            maxValue = max(maxValue, currentNode.val)
-            self.max_difference = max(self.max_difference, maxValue - minValue)
+            left = helper(root.left, max_, min_)
+            right = helper(root.right, max_, min_)
 
-            self.findMaxAncestorDifference(currentNode.left, minValue, maxValue)
-            self.findMaxAncestorDifference(currentNode.right, minValue, maxValue)
+        helper(root, float("-inf"), float("inf"))
+        return max_abs
